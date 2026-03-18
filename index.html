@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تهنئة عيد فخمة</title>
+  <style>
+    :root{
+      --bg1:#a18cd1;
+      --bg2:#fbc2eb;
+      --accent:#ff7eb3;
+      --panel-bg: rgba(0,0,0,0.6);
+      --text:#ffffff;
+      --focus: 3px solid #fff3;
+    }
+
+    /* Skip link */
+    .skip-link{
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      background: #000;
+      color: #fff;
+      padding: 8px 12px;
+      z-index: 100;
+    }
+    .skip-link:focus{
+      left: 1rem;
+      top: 1rem;
+      border-radius: 4px;
+    }
+
+    html,body{
+      height: 100%;
+    }
+    body {
+      font-family: "Arial", sans-serif;
+      background: linear-gradient(to left, var(--bg1), var(--bg2));
+      text-align: center;
+      padding: 50px;
+      color: var(--text);
+      margin: 0;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    main { display:flex; align-items:center; justify-content:center; min-height: calc(100vh - 100px); }
+
+    .box {
+      background: var(--panel-bg);
+      padding: 30px;
+      border-radius: 20px;
+      display: inline-block;
+      max-width: 480px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-size:0.95rem;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.12);
+      margin-top: 6px;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 1rem;
+      color: var(--text);
+      background: transparent;
+    }
+
+    button {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .controls {
+      margin-top: 12px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    /* visible focus for keyboard users */
+    :focus {
+      outline: none;
+    }
+    :focus-visible {
+      outline: var(--focus);
+      outline-offset: 3px;
+    }
+
+    /* small responsive */
+    @media (max-width:480px){
+      body { padding: 20px; }
+      .box { padding: 20px; }
+    }
+
+    /* Visually hidden (screen reader only) */
+    .sr-only{
+      position: absolute !important;
+      height: 1px; width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+    }
+
+    /* Toast / feedback */
+    .toast {
+      margin-top: 12px;
+      background: rgba(255,255,255,0.06);
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+    .toast[aria-hidden="false"] { display:block; }
+
+    audio { margin-top: 12px; width: 100%; border-radius: 8px; }
+
+    /* Respect reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">تخطي إلى المحتوى</a>
+
+  <main id="main" tabindex="-1" aria-labelledby="pageTitle">
+    <div class="box" role="region" aria-labelledby="boxTitle">
+      <h1 id="pageTitle" style="margin:0 0 8px 0;">🎉 عيد سعيد 🎉</h1>
+
+      <!-- Visible label (better than placeholder only) -->
+      <label for="name" id="boxTitle">اكتب اسمك لعرض التهنئة</label>
+      <input
+        id="name"
+        name="name"
+        type="text"
+        dir="auto"
+        placeholder="اكتب اسمك هنا"
+        aria-describedby="nameHelp"
+        autocomplete="name"
+        />
+
+      <div id="nameHelp" class="sr-only">أدخل اسمك ثم اضغط زر "عرض التهنئة" أو اضغط Enter</div>
+
+      <div class="controls" role="group" aria-label="أزرار التهيئة">
+        <button id="showBtn" type="button">عرض التهنئة</button>
+        <button id="copyBtn" type="button">انسخ رابطك 🔗</button>
+        <button id="playBtn" type="button" aria-pressed="false">تشغيل التكبيرات 🔊</button>
+      </div>
+
+      <!-- Live region: dynamic messages will be announced by screen readers -->
+      <p id="msg" role="status" aria-live="polite" style="margin-top:12px; font-size:1.1rem;"></p>
+
+      <!-- Visible toast that also provides feedback (not an alert()) -->
+      <div id="toast" class="toast" aria-hidden="true"></div>
+
+      <!-- Accessible audio: controls provided (no autoplay), preload none -->
+      <audio id="takbeer" preload="none" controls aria-label="ملف صوتي للتكبيرات">
+        <source src="https://www.islamcan.com/audio/adhan/takbeer.mp3" type="audio/mpeg">
+        متصفحك لا يدعم تشغيل الصوت. <a href="https://www.islamcan.com/audio/adhan/takbeer.mp3">افتح الملف</a>
+      </audio>
+
+      <!-- Optional transcript for non-audio users -->
+      <details style="margin-top:8px; color:#fff8;">
+        <summary>عرض نص التكبيرات (لمنع تشغيل الصوت)</summary>
+        <p style="text-align:right; direction:rtl; color:#fff;">الله أكبر، الله أكبر، ...</p>
+      </details>
+    </div>
+  </main>
+
+  <script>
+    // Grab elements
+    const nameInput = document.getElementById('name');
+    const showBtn = document.getElementById('showBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const playBtn = document.getElementById('playBtn');
+    const msg = document.getElementById('msg');
+    const toast = document.getElementById('toast');
+    const audio = document.getElementById('takbeer');
+
+    // Helper: show message in live region and toast
+    function showMessage(text) {
+      msg.textContent = text; // announced via aria-live
+      toast.textContent = text;
+      toast.setAttribute('aria-hidden', 'false');
+      // remove after 3s
+      setTimeout(() => {
+        toast.setAttribute('aria-hidden', 'true');
+      }, 3000);
+    }
+
+    // Show greeting
+    function showGreeting() {
+      const name = nameInput.value.trim();
+      if (name) {
+        const safeName = name; // displayed, but when used in URL we encode
+        showMessage('✨ عيدك مبارك يا ' + safeName + ' ✨');
+        // Move focus to message for immediate context (optional)
+        msg.focus?.();
+      } else {
+        showMessage('الرجاء إدخال اسمك أولاً');
+        nameInput.focus();
+      }
+    }
+
+    // Copy link (with proper encoding and fallback)
+    async function copyLink() {
+      const name = nameInput.value.trim();
+      if (!name) {
+        showMessage('الرجاء إدخال الاسم قبل نسخ الرابط');
+        nameInput.focus();
+        return;
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('name', name);
+
+      const text = url.toString();
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          showMessage('تم نسخ الرابط 😍');
+        } else {
+          // Fallback: create temporary textarea
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            showMessage('تم نسخ الرابط (نسخ احتياطي) 😍');
+          } catch (err) {
+            showMessage('فشل النسخ تلقائياً، افتح الرابط يدوياً: ' + text);
+          }
+          document.body.removeChild(ta);
+        }
+      } catch (err) {
+        showMessage('حدث خطأ أثناء محاولة النسخ');
+        console.error(err);
+      }
+    }
+
+    // Play/pause audio toggle
+    function toggleAudio() {
+      if (audio.paused) {
+        audio.play().then(() => {
+          playBtn.setAttribute('aria-pressed','true');
+          playBtn.textContent = 'إيقاف التكبيرات 🔇';
+        }).catch(err => {
+          showMessage('تعذر تشغيل الصوت تلقائياً. تحقق من إعدادات المتصفح.');
+          console.error(err);
+        });
+      } else {
+        audio.pause();
+        playBtn.setAttribute('aria-pressed','false');
+        playBtn.textContent = 'تشغيل التكبيرات 🔊';
+      }
+    }
+
+    // Event listeners
+    showBtn.addEventListener('click', showGreeting);
+    copyBtn.addEventListener('click', copyLink);
+    playBtn.addEventListener('click', toggleAudio);
+
+    // Support Enter key on input (submit equivalent)
+    nameInput.addEventListener('keydown', function(e){
+      if (e.key === 'Enter') {
+        showGreeting();
+      }
+    });
+
+    // If URL has name param, show greeting (note: decodeURIComponent)
+    (function applyNameFromURL(){
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name');
+        if (name) {
+          // don't decode twice; URLSearchParams already decodes
+          nameInput.value = name;
+          showMessage('✨ عيدك مبارك يا ' + name + ' ✨');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+
+    // Improve keyboard focus when navigating to the page via skip link
+    document.querySelector('.skip-link').addEventListener('click', function () {
+      document.getElementById('main').focus();
+    });
+
+    // Accessibility: If user prefers reduced motion, keep audio only on user action (we already require click)
+  </script>
+</body>
+</html>
